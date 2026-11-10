@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#10251d">
+<title>Your move — Jozlo challenge</title><meta name="description" content="See it. Send it. Match your friend's exercise challenge or beat it and send one back with Jozlo.">
+<meta property="og:title" content="Your move. A Jozlo challenge."><meta property="og:description" content="See it. Send it. Match the reps, beat them, and challenge back.">
+<meta property="og:type" content="website"><meta property="og:image" content="https://earnit-info.onrender.com/challenge-card.png"><meta name="twitter:card" content="summary_large_image">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#10251d;color:#f8f2df;font:17px/1.5 system-ui,sans-serif}main{max-width:560px;margin:auto;padding:28px 22px 40px}header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #547058;padding-bottom:20px}.brand{font:italic bold 38px Georgia,serif;letter-spacing:-2px}small,.muted{color:#b7c7ab}.tag{font-size:11px;letter-spacing:2px;color:#d0f376;font-weight:800}h1{font-size:clamp(30px,8vw,44px);line-height:1.08;letter-spacing:-1.8px;margin:24px 0 14px}#count{font-size:clamp(92px,28vw,150px);font-weight:850;line-height:1;color:#d0f376;letter-spacing:-8px;margin:24px 0 0;overflow-wrap:anywhere}#exercise{font-size:32px;line-height:1.1;font-weight:800;text-transform:uppercase;letter-spacing:-1px;margin-bottom:20px}.card{border-bottom:1px solid #547058;padding:18px 0 28px}.actions{display:grid;gap:12px;margin:24px 0}.button,button{border:1px solid #8da274;background:#d0f376;color:#10251d;font:inherit;font-weight:800;text-align:center;padding:16px 18px;border-radius:10px;text-decoration:none;cursor:pointer;min-height:54px;display:block;width:100%}.secondary{background:transparent;color:#f8f2df;border-color:#547058}button:disabled{opacity:.45;cursor:default}a{color:#d0f376}#notice{min-height:26px;font-size:15px;color:#d0f376}details{margin-top:24px}textarea{width:100%;min-height:90px;background:#183226;border:1px solid #547058;color:#f8f2df;padding:12px;border-radius:8px;margin:12px 0}ol{padding-left:22px}li{padding:6px 0}footer{border-top:1px solid #547058;margin-top:30px;padding-top:18px;font-size:13px}button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid #f2b36b;outline-offset:4px}
+</style></head><body><main><header><span class="brand">jozlo</span><span class="tag">SEE IT. SEND IT.</span></header>
+<section class="card"><p class="tag">YOU HAVE BEEN CHALLENGED</p><div id="count">↗</div><div id="exercise">Your move.</div><h1 id="headline">A little effort.<br>A good comeback.</h1><p id="instruction">Open an invitation from a friend to see the exercise and target.</p></section>
+<div class="actions"><button id="accept" disabled>Open challenge in Jozlo</button><button id="copy" class="secondary" disabled>Copy invitation for after install</button><a id="iphone" class="button secondary" href="https://apps.apple.com/app/id6819877235" rel="noopener">Check Jozlo on the App Store</a><button id="android" class="secondary" disabled>Android public release coming soon</button></div>
+<p id="notice" role="status" aria-live="polite"></p><p id="availability" class="muted">Jozlo is awaiting its public iPhone release. Existing testers can open this challenge now. Store availability will update here when the iPhone listing goes live.</p>
+<section><h2>Match. Beat. Send it back.</h2><ol><li>Open Jozlo, or install it when available.</li><li>Return to this invitation and tap <strong>Open challenge</strong>. Or paste the invitation under Progress → Challenges.</li><li>Complete the reps, then share your reply or challenge everyone who sees your post.</li></ol><p class="muted">One invitation can be used by multiple people. Choose a comfortable goal and stop if anything hurts. Counts are estimates, not a form or health assessment.</p></section>
+<details><summary>Trouble opening your invitation?</summary><p>Copy the invitation, then in Jozlo open Progress → Challenges → Paste invitation. Installing through a store does not automatically carry the invitation into the app.</p><textarea id="fallback" readonly aria-label="Challenge invitation"></textarea></details>
+<footer><a href="/">About Jozlo</a> · <a href="/privacy.html">Privacy</a> · <a href="/support.html">Support</a><p>No sign-in, contact upload or payment is needed to view this invitation. Sharing is your choice. An invitation expires after seven days.</p></footer></main>
+<script type="module">
+import {challengeCodeFromToken,LINK_TASKS,APP_STORE_URL,PLAY_STORE_URL} from "./challenge-link.mjs";
+const labels={pushups:"push-ups",squats:"squats",situps:"sit-ups",jumpingjacks:"jumping jacks",pullups:"pull-ups"};
+const $=id=>document.getElementById(id),agent=navigator.userAgent,isAndroid=/Android/i.test(agent);
+let code="",iphoneLive=false,playLive=false,timer=null;
+function notice(text){$("notice").textContent=text}
+async function copy(){try{await navigator.clipboard.writeText(code);notice("Invitation copied. Return here after installing, or paste it in Jozlo.");return true}catch{$("fallback").value=code;$("fallback").focus();$("fallback").select();notice("Copy the selected invitation, then paste it in Jozlo.");return false}}
+function fallback(){
+ if(document.hidden)return;
+ if(isAndroid&&playLive)location.assign(PLAY_STORE_URL);
+ else if(!isAndroid&&iphoneLive)location.assign(APP_STORE_URL);
+ else notice(isAndroid?"The Android public listing is not available yet. Already testing Jozlo? Open it and paste this invitation.":"Jozlo is not publicly listed yet. Already testing? Open Jozlo and paste your invitation. Check the App Store button for release availability.");
+}
+function accept(){copy();clearTimeout(timer);timer=setTimeout(fallback,2500);location.href="jozlo://challenge?code="+encodeURIComponent(code)}
+document.addEventListener("visibilitychange",()=>{if(document.hidden)clearTimeout(timer)});
+$("accept").onclick=accept;$("copy").onclick=copy;
+try {
+ const token=new URL(location.href).searchParams.get("c");
+ code=challengeCodeFromToken(token||"");const [,task,n,date]=code.split(":");const now=Date.now(),created=Number(date),count=Number(n);
+ if(!LINK_TASKS.includes(task)||created>now+300000||now-created>7*86400000)throw Error("This invitation expired. Ask your friend to share a fresh challenge.");
+ $("count").textContent=n;$("exercise").textContent=labels[task];$("headline").textContent="See "+n+". Send "+n+" back.";$("instruction").textContent="Match "+n+" "+labels[task]+", or do more and challenge back.";
+ document.title=n+" "+labels[task]+" — your Jozlo challenge";
+ $("fallback").value=code;$("accept").disabled=false;$("copy").disabled=false;
+}catch(e){$("headline").textContent="Let's get you a fresh challenge.";$("instruction").textContent=e.message||"Ask your friend for a complete Jozlo invitation.";$("count").textContent="↗"}
+fetch("https://itunes.apple.com/lookup?id=6819877235&country=us").then(r=>r.json()).then(data=>{if(data.resultCount>0){iphoneLive=true;$("iphone").textContent="Download Jozlo for iPhone";$("availability").textContent="Jozlo is available for iPhone. Install it, then return here to open your challenge."}}).catch(()=>{});
+</script></body></html>
