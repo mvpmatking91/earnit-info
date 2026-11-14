@@ -1,0 +1,24 @@
+/* Shared reflow, input and keyboard affordances on every public page. */
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 1rem; }
+*, *::before, *::after { box-sizing: border-box; }
+body { min-width: 0; overflow-wrap: break-word; }
+main, section, article, header, footer, nav { min-width: 0; }
+img, video, svg { max-width: 100%; }
+img, video { height: auto; }
+a, button, summary, textarea, input { -webkit-tap-highlight-color: transparent; }
+a, p, li, h1, h2, h3, h4, textarea { overflow-wrap: anywhere; }
+button, input, select, textarea { font: inherit; max-width: 100%; }
+button, [role="button"], summary { min-height: 44px; }
+a:focus-visible, button:focus-visible, summary:focus-visible, textarea:focus-visible, input:focus-visible {
+ outline: 3px solid currentColor; outline-offset: 4px;
+}
+.skip { position: absolute; left: -10000px; top: 8px; }
+.skip:focus { left: 8px; z-index: 10; padding: 10px 16px; color: #153b2e; background: #fff; }
+@media (prefers-reduced-motion: reduce) {
+ html { scroll-behavior: auto !important; }
+ *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+@media (forced-colors: active) {
+ a, button, summary, textarea, input { forced-color-adjust: auto; }
+ .btn, .button, button { border: 1px solid ButtonText; }
+}
